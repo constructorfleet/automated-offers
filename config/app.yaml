@@ -1,0 +1,16 @@
+browserData: "/Users/tglenn/.webdriver"
+output:
+  file: "{account}.{date}.yaml"
+  path: "offers/{user}"
+log:
+  file: offers.log
+  level: debug
+credentialProviders:
+  - type: 1password-connect
+    url: http://10.0.12.66:7080/
+    token: ${OP_TOKEN}
+users:
+  - tglenn
+  - ajanis
+accounts:
+  - chase

@@ -1,0 +1,201 @@
+type: chase
+url: https://chase.com
+# https://secure.chase.com/web/auth/#/logon/logon/chaseOnline
+steps:
+  - name: Enter username
+    timeout: 5000
+    cssSelector: input[name='userId']
+    iFrameSelector: iframe#logonbox
+    actions:
+      - type: sendkeys
+        send: username
+  - name: Enter password
+    cssSelector: input[name='password']
+    iFrameSelector: iframe#logonbox
+    actions:
+      - type: sendkeys
+        send: password
+  - name: Sign-in
+    cssSelector: button#signin-button
+    iFrameSelector: iframe#logonbox
+    actions:
+      - type: click
+  - name: Enter username (if redirected to a logon page)
+    timeout: 5000
+    cssSelector: input#userId-text-input-field
+    isOptional: true
+    actions:
+      - type: sendkeys
+        send: username
+      - type: step
+        step:
+          name: Enter password
+          cssSelector: input#password-text-input-field
+          isOptional: true
+          actions:
+            - type: sendkeys
+              send: password
+      - type: step
+        step:
+          name: Sign-in
+          cssSelector: button#signin-button
+          isOptional: true
+          actions:
+            - type: click
+  - name: Navigate to offers
+    timeout: 120000
+    cssSelector: "div[data-testid='offer-carousel-header-container']"
+    actions:
+      - type: click
+  - name: Open card dropdown
+    cssSelector: "#select-credit-card-account"
+    actions:
+      - type: click
+  - name: Iterate over cards
+    select: all
+    cssSelector: "#select-credit-card-account > mds-select-option"
+    elementIndexVariable: cardIndex
+    elementCountVariable: cardCount
+    actions:
+      - type: text
+        regexCaptureGroups:
+          type: ".+(?= \\()"
+          number: "\\d+(?=\\))"
+        stringify: "{type}({number})"
+        variableName: card
+      - type: click
+      - type: step
+        step:
+          name: Activate new offers
+          cssSelector: mds-icon[type='ico_add_circle'], mds-icon[type='ico_checkmark_filled']
+          select: all
+          isOptional: true
+          elementIndexVariable: offerIndex
+          elementCountVariable: offerCount
+          actions:
+            - type: click
+            - type: step
+              step:
+                name: Get offer details
+                cssSelector: div[data-testid='offerAmount']
+                actions:
+                  - type: text
+                    regexCaptureGroups:
+                      amount: "\\d+"
+                      unit: "[%\\$]"
+                      type: "[a-zA-Z].+$"
+                    storeUnder: "cards.{card}.offers.{offerIndex}"
+                    variableName: offer
+            - type: step
+              step:
+                name: Get offer store
+                cssSelector: "#content > div > div:nth-child(3) > div > div:nth-child(2) > div > div > div:nth-child(2) > h2"
+                actions:
+                  - type: text
+                    storeUnder: "cards.{card}.offers.{offerIndex}"
+                    variableName: store
+            - type: step
+              step:
+                name: Get offer expiration
+                cssSelector: "#content > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div > div >div > div:nth-child(2) > span"
+                actions:
+                  - type: text
+                    storeUnder: "cards.{card.type}.{card.number}.offers.{offerIndex}"
+                    # templateReplacers:
+                    #   "{cardIndex}": card.name
+                    #   "{offerIndex}": offerIndex
+                    variableName: expires
+            - type: step
+              step:
+                name: Get offer expiration
+                cssSelector: "#content > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div > div >div > div:nth-child(2) > span"
+                actions:
+                  - type: text
+                    storeUnder: "cards.{card}.offers.{offerIndex}"
+                    variableName: expires
+            - type: step
+              step:
+                name: Get offer card
+                cssSelector: "#content > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div > div:nth-child(2) > div > div:nth-child(2) > span"
+                actions:
+                  - type: text
+                    storeUnder: "cards.{card}.offers.{offerIndex}"
+                    regexCaptureGroups:
+                      card: "(?<=Pay with ).+$"
+                    variableName: card
+            - type: step
+              step:
+                name: Return to offers
+                cssSelector: "#mds-secondary-back-navbar"
+                shadowRootCSSSelector:
+                  - "#back-button"
+                actions:
+                  - type: click
+      - type: step
+        step:
+          name: Open card dropdown
+          cssSelector: "#select-credit-card-account"
+          actions:
+            - type: click
+      # - type: step
+      #   step:
+      #     name: Return to accounts
+      #     cssSelector: mds-navigation-bar-item#requestAccounts
+      #     shadowRootCSSSelector:
+      #       - "div > a"
+      #     actions:
+      #       - type: click
+      # - type: step
+      #   step:
+      #     name: Iterate over 5% categories
+      #     cssSelector: "div[data-testid='tertiaryCells'] > div > mds-link[text='Details']"
+      #     timeout: 3000
+      #     isOptiona: true
+      #     select: all
+      #     elementIndexVariable: cardCategoryIndex
+      #     elementCountVariable: cardCategoryCount
+      #     actions:
+      #       - type: click
+      #       - type: step
+      #         step:
+      #           name: Iterate over bonus categories
+      #           cssSelector: "freedom-activation-active > div > div > ul > li > span"
+      #           timeout: 20000
+      #           select: all
+      #           elementIndexVariable: bonusIndex
+      #           elementCountVariable: bonusCount
+      #           actions:
+      #             - type: text
+      #               storeUnder: cards.{cardIndex}.bonuses.{bonusIndex}.bonus
+      #               templateReplacers:
+      #                 "{cardIndex}": cardIndex
+      #                 "{bonusIndex}": bonusIndex
+      #               variableName: category
+      #             - type: step
+      #               cssSelector: "h2#main"
+      #               actions:
+      #                 - type: text
+      #                   regexCaptureGroups:
+      #                     amount: "\\d+"
+      #                     unit: "[%\\$]"
+      #                     type: "[a-zA-Z].+$"
+      #                   storeUnder: "cards.{cardIndex}.bonuses.{bonusIndex}"
+      #                   templateReplacers:
+      #                     "{cardIndex}": cardIndex
+      #                     "{bonusIndex}": bonusIndex
+      #                   variableName: bonus
+      #             - type: step
+      #               cssSelector: "ur-nav-header > nav-header"
+      #               shadowRootCSSSelector:
+      #                 - "header > section > brand-bar > mds-brand-bar"
+      #                 - "mds-button#account"
+      #               actions:
+      #                 - type: click
+      # - type: step
+      #   step:
+      #     name: Navigate to offers
+      #     timeout: 5000
+      #     cssSelector: "div[data-testid='offer-carousel-header-container']"
+      #     actions:
+      #       - type: click
+      # - type: click

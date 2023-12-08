@@ -1,0 +1,20 @@
+{
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "eslint.format.enable": true,
+    "editor.defaultFormatter": "trunk.io",
+    "eslint.lintTask.enable": true,
+    "editor.tabSize": 2,
+    "editor.formatOnSaveMode": "file",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "eslint.codeActionsOnSave.mode": "all",
+    "eslint.codeActionsOnSave.rules": [
+        "source.organizeImports"
+    ],
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}

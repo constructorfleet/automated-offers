@@ -1,0 +1,8 @@
+id: tglenn
+accounts:
+  - type: chase
+    credentials:
+      type: 1password
+      provider: 1password-connect
+      vault: Connect Server
+      item: Chase - Teagan
