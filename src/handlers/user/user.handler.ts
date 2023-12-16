@@ -11,7 +11,7 @@ import { UserCredentialsService } from "./credentials/user-credentials.service";
 
 @Injectable()
 export class UserHandler extends Loggable {
-  private index: number = -1;
+  private index: number = this.userConfigs.length;
   private webDriver: WebDriver = undefined;
 
   constructor(
@@ -44,8 +44,9 @@ export class UserHandler extends Loggable {
     if (this.webDriver) {
       await this.webDriver?.close();
     }
-    this.index++;
-    if (this.index >= this.userConfigs.length) {
+    this.index--;
+    if (this.index < 0) {
+      //this.index >= this.userConfigs.length ) {
       return false;
     }
     this.webDriver = await this.driverFactory(this.userConfig);
@@ -53,7 +54,14 @@ export class UserHandler extends Loggable {
   }
 
   async handle(variableMap?: VariableMap): Promise<VariableMap> {
-    variableMap = setVariable(SystemVariable.USER, this.id, variableMap);
+    variableMap = setVariable(
+      [SystemVariable.USERS, this.id].join("."),
+      {
+        [SystemVariable.USER]: this.id,
+        [SystemVariable.ACCOUNTS]: {},
+      },
+      variableMap
+    );
     try {
       const accounts = this.accounts.map((account) => ({
         type: account.type,
@@ -61,18 +69,23 @@ export class UserHandler extends Loggable {
         credentials: account.credentials,
       }));
       for (const account of accounts) {
-        variableMap = setVariable(
-          SystemVariable.ACCOUNT,
+        const accountVarPath = [
+          SystemVariable.USERS,
+          this.id,
+          SystemVariable.ACCOUNTS,
           account.type,
-          variableMap
-        );
+        ].join(".");
         this.logger.log(
           `Processing account ${account.type} for user ${this.id}`
         );
-        variableMap = await account.handler.handle(
-          this.driver,
-          variableMap,
-          this.credentialService.for(account.credentials)
+        variableMap = setVariable(
+          accountVarPath,
+          await account.handler.handle(
+            this.driver,
+            {},
+            this.credentialService.for(account.credentials)
+          ),
+          variableMap
         );
       }
       return variableMap;

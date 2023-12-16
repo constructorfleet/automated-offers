@@ -1,7 +1,7 @@
 browserData: "/Users/tglenn/.webdriver"
 output:
-  file: "{account}.{date}.yaml"
-  path: "offers/{user}"
+  file: "{date}.yaml"
+  path: "offers"
 log:
   file: offers.log
   level: debug
