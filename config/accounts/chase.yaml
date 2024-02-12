@@ -48,11 +48,13 @@ steps:
     actions:
       - type: click
   - name: Open card dropdown
+    timeout: 5000
     cssSelector: "#select-credit-card-account"
     actions:
       - type: click
   - name: Iterate over cards
     select: all
+    timeout: 5000
     cssSelector: "#select-credit-card-account > mds-select-option"
     elementIndexVariable: cardIndex
     elementCountVariable: cardCount
@@ -94,17 +96,17 @@ steps:
                   - type: text
                     storeUnder: "cards.{card}.offers.{offerIndex}"
                     variableName: store
-            - type: step
-              step:
-                name: Get offer expiration
-                cssSelector: "#content > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div > div >div > div:nth-child(2) > span"
-                actions:
-                  - type: text
-                    storeUnder: "cards.{card.type}.{card.number}.offers.{offerIndex}"
-                    # templateReplacers:
-                    #   "{cardIndex}": card.name
-                    #   "{offerIndex}": offerIndex
-                    variableName: expires
+            # - type: step
+            #   step:
+            #     name: Get offer expiration
+            #     cssSelector: "#content > div > div:nth-child(3) > div > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div > div >div > div:nth-child(2) > span"
+            #     actions:
+            #       - type: text
+            #         storeUnder: "cards.{card.type}.{card.number}.offers.{offerIndex}"
+            #         # templateReplacers:
+            #         #   "{cardIndex}": card.name
+            #         #   "{offerIndex}": offerIndex
+            #         variableName: expires
             - type: step
               step:
                 name: Get offer expiration

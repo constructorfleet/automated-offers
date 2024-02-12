@@ -67,12 +67,10 @@ export class AppService extends Loggable {
   }
 
   async run(): Promise<void> {
-    let variableMap = {};
+    let variableMap = this.getVariableMap();
     while (await this.users.next()) {
       this.logger.log(`Processing user: ${this.users.id}`);
-      variableMap[this.users.id] = await this.users.handle(
-        this.getVariableMap()
-      );
+      variableMap = await this.users.handle(variableMap);
     }
     await this.saveOutput(variableMap);
   }

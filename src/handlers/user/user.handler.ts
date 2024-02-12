@@ -11,7 +11,7 @@ import { UserCredentialsService } from "./credentials/user-credentials.service";
 
 @Injectable()
 export class UserHandler extends Loggable {
-  private index: number = this.userConfigs.length;
+  private index: number = -1; //this.userConfigs.length;
   private webDriver: WebDriver = undefined;
 
   constructor(
@@ -44,9 +44,11 @@ export class UserHandler extends Loggable {
     if (this.webDriver) {
       await this.webDriver?.close();
     }
-    this.index--;
-    if (this.index < 0) {
-      //this.index >= this.userConfigs.length ) {
+    this.index++;
+    if (
+      //this.index < 0) {
+      this.index >= this.userConfigs.length
+    ) {
       return false;
     }
     this.webDriver = await this.driverFactory(this.userConfig);

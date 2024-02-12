@@ -25,7 +25,6 @@ export const WebDriverFactoryProvider: FactoryProvider = {
     async (userConfig: UserConfig) => {
       let options = new ChromeOptions()
         .addArguments("--no-sandbox")
-        .addArguments("--start-maximized")
         .addArguments(`--user-data-dir=${appConfig.browserData}`)
         .addArguments(`--profile-directory=${userConfig.id}`);
       if (appConfig.headless) {

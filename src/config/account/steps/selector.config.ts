@@ -29,7 +29,7 @@ export class SelectorConfig {
   @IsOptional()
   @IsNumber()
   @Min(100)
-  timeout: number = 2000;
+  timeout: number = 7000;
 
   @IsOptional()
   @IsEnum(SelectorType)
